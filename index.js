@@ -16,13 +16,13 @@ app.use(cors());
 app.use(express.json())
 mongoose.connect(dbURL);
 
-router.post("/api/register", async (req, res) => {
+router.post("/register", async (req, res) => {
     const { username, password } = req.body
     const userDoc = await User.create({ username: username, password: bcrypt.hashSync(password, salt) })
     res.json(userDoc)
 })
 
-router.post('/api/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const userDoc = await User.findOne({ username });
     console.log(userDoc, username)
@@ -41,7 +41,7 @@ router.post('/api/login', async (req, res) => {
     }
 });
 
-router.get('/api/getlinks', async (req, res) => {
+router.get('/getlinks', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
@@ -53,7 +53,7 @@ router.get('/api/getlinks', async (req, res) => {
     }
 })
 
-router.get('/api/links', async (req, res) => {
+router.get('/links', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
@@ -81,7 +81,7 @@ router.get('/api/links', async (req, res) => {
 })
 
 
-router.post('/api/link', async (req, res) => {
+router.post('/link', async (req, res) => {
     const { linkUrl } = req.body;
     console.log(linkUrl)
     try {
@@ -110,11 +110,11 @@ router.post('/api/link', async (req, res) => {
     }
 })
 
-router.post('/api/addLink', async (req, res) => {
+router.post('/addLink', async (req, res) => {
 
 })
 
-router.get('/api/profile', (req, res) => {
+router.get('/profile', (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, (err, info) => {
         if (err) throw err;
