@@ -16,45 +16,13 @@ app.use(cors());
 app.use(express.json())
 mongoose.connect(dbURL);
 
-// (async () => {
-//     console.log("ok");
-//     const doc = await Link.create({ linkUrl : "http://hwsrv-1223902.hostwindsdns.com:8080/" , username: "admin", password: bcrypt.hashSync("12345678", salt) , usernameTag : "#username", passwordTag : "#password" , buttonTag: ".MuiButtonBase-root.MuiButton-root.MuiButton-contained", })
-//     console.log("ok");
-// })();
-
-// const link = async () => {
-//     try {
-//         const links = await Link.find({});
-//         if (links.length > 0) {
-//             const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
-//             links?.map(async (item) => {
-//                 const page = await browser.newPage();
-//                 await page.goto(item.linkUrl);
-//                 await page.setViewport({ width: 1920, height: 1080 });
-//                 await page.locator(item.usernameTag).fill(item.username);
-//                 await page.locator(item.passwordTag).fill(item.password);
-//                 await page.locator(item.buttonTag).click();
-//             })
-//             // await browser.close();
-//         }
-//     }
-//     catch (e) {
-//         // res.status(500).json(e)
-//         console.log(e);
-//     }
-// };
-
-
-// link()
-
-
-router.post("/register", async (req, res) => {
+router.post("/api/register", async (req, res) => {
     const { username, password } = req.body
     const userDoc = await User.create({ username: username, password: bcrypt.hashSync(password, salt) })
     res.json(userDoc)
 })
 
-router.post('/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     const userDoc = await User.findOne({ username });
     console.log(userDoc, username)
@@ -73,7 +41,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/getlinks', async (req, res) => {
+router.get('/api/getlinks', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
@@ -85,7 +53,7 @@ router.get('/getlinks', async (req, res) => {
     }
 })
 
-router.get('/links', async (req, res) => {
+router.get('/api/links', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
@@ -113,7 +81,7 @@ router.get('/links', async (req, res) => {
 })
 
 
-router.post('/link', async (req, res) => {
+router.post('/api/link', async (req, res) => {
     const { linkUrl } = req.body;
     console.log(linkUrl)
     try {
@@ -142,11 +110,11 @@ router.post('/link', async (req, res) => {
     }
 })
 
-router.post('/addLink', async (req, res) => {
+router.post('/api/addLink', async (req, res) => {
 
 })
 
-router.get('/profile', (req, res) => {
+router.get('/api/profile', (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, (err, info) => {
         if (err) throw err;
