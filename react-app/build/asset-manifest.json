@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.e84a957d.css",
-    "main.js": "/static/js/main.fcb6d9f1.js",
-    "static/js/510.b2f6fa30.chunk.js": "/static/js/510.b2f6fa30.chunk.js",
+    "main.js": "/static/js/main.473e7cde.js",
+    "static/js/510.6873837c.chunk.js": "/static/js/510.6873837c.chunk.js",
     "static/js/444.f3a4387b.chunk.js": "/static/js/444.f3a4387b.chunk.js",
     "static/js/663.09524951.chunk.js": "/static/js/663.09524951.chunk.js",
     "static/js/113.a3b086f9.chunk.js": "/static/js/113.a3b086f9.chunk.js",
@@ -14,7 +14,7 @@
     "static/js/101.4891c61d.chunk.js": "/static/js/101.4891c61d.chunk.js",
     "static/js/986.866814bf.chunk.js": "/static/js/986.866814bf.chunk.js",
     "static/js/308.9b4111d6.chunk.js": "/static/js/308.9b4111d6.chunk.js",
-    "static/js/103.0ef38360.chunk.js": "/static/js/103.0ef38360.chunk.js",
+    "static/js/103.4b286797.chunk.js": "/static/js/103.4b286797.chunk.js",
     "static/js/147.4e3c0705.chunk.js": "/static/js/147.4e3c0705.chunk.js",
     "static/media/404-error-idea.gif": "/static/media/404-error-idea.a65b475afb310d2c0c4e.gif",
     "static/media/dark-logo.png": "/static/media/dark-logo.474f7a07abf13df88f58.png",
@@ -23,6 +23,6 @@
   },
   "entrypoints": [
     "static/css/main.e84a957d.css",
-    "static/js/main.fcb6d9f1.js"
+    "static/js/main.473e7cde.js"
   ]
 }
