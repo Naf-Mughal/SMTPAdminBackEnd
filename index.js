@@ -83,30 +83,31 @@ router.get('/links', async (req, res) => {
 
 router.post('/link', async (req, res) => {
     const { linkUrl } = req.body;
-    try {
-        const links = await Link.find({ linkUrl: String(linkUrl) });
-        if (links.length > 0) {
-            const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
-            try {
-                links?.map(async (item) => {
-                    const page = await browser.newPage();
-                    page.setDefaultNavigationTimeout(0);
-                    await page.goto(item.linkUrl, { 'timeout': 600000, });
-                    await page.setViewport({ width: 1920, height: 1080 });
-                    await page.locator(item.usernameTag).fill(item.username);
-                    await page.locator(item.passwordTag).fill(item.password);
-                    await page.locator(item.buttonTag).click();
-                })
-            }
-            catch (e) {
-                res.status(500).json(e)
-            }
-            res.status(200).json("ok")
-        }
-    }
-    catch (e) {
-        res.status(500).json(e)
-    }
+    res.json(linkUrl)
+    // try {
+    //     const links = await Link.find({ linkUrl: String(linkUrl) });
+    //     if (links.length > 0) {
+    //         const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
+    //         try {
+    //             links?.map(async (item) => {
+    //                 const page = await browser.newPage();
+    //                 page.setDefaultNavigationTimeout(0);
+    //                 await page.goto(item.linkUrl, { 'timeout': 600000, });
+    //                 await page.setViewport({ width: 1920, height: 1080 });
+    //                 await page.locator(item.usernameTag).fill(item.username);
+    //                 await page.locator(item.passwordTag).fill(item.password);
+    //                 await page.locator(item.buttonTag).click();
+    //             })
+    //         }
+    //         catch (e) {
+    //             res.status(500).json(e)
+    //         }
+    //         res.status(200).json("ok")
+    //     }
+    // }
+    // catch (e) {
+    //     res.status(500).json(e)
+    // }
 })
 
 router.post('/addLink', async (req, res) => {
