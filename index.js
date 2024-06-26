@@ -83,7 +83,6 @@ router.get('/links', async (req, res) => {
 
 router.post('/link', async (req, res) => {
     const { linkUrl } = req.body;
-    console.log(linkUrl)
     try {
         const links = await Link.find({ linkUrl: String(linkUrl) });
         if (links.length > 0) {
