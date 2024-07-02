@@ -71,12 +71,14 @@ router.get('/links', async (req, res) => {
                 })
             }
             catch (e) {
+                console.log(e)
                 res.status(500).json(e)
             }
             res.status(200).json("ok")
         }
     }
     catch (e) {
+        console.log(e)
         res.status(500).json(e)
     }
 })
@@ -100,12 +102,14 @@ router.post('/link', async (req, res) => {
                 })
             }
             catch (e) {
+                console.log(e)
                 res.status(500).json(e)
             }
             res.status(200).json("ok")
         }
     }
     catch (e) {
+        console.log(e)
         res.status(500).json(e)
     }
 })
