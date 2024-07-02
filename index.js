@@ -12,6 +12,7 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const secret = "gsjhkldafsdghfbjkladsbvjklbxcljnvzbjhzsdbjlvsjhdfbgasjkdfh";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const browserURL = 'http://127.0.0.1:9222';
 app.use(cors());
 app.use(express.json())
 mongoose.connect(dbURL);
@@ -57,7 +58,7 @@ router.get('/links', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
-            const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
+            const browser = await puppeteer.connect({ browserURL, headless: false });
             try {
                 links?.map(async (item) => {
                     const page = await browser.newPage();
@@ -85,25 +86,24 @@ router.post('/link', async (req, res) => {
     const { linkUrl } = req.body;
     try {
         const links = await Link.find({ linkUrl: String(linkUrl) });
-        res.json(links)
-        // if (links.length > 0) {
-        //     const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
-        //     try {
-        //         links?.map(async (item) => {
-        //             const page = await browser.newPage();
-        //             page.setDefaultNavigationTimeout(0);
-        //             await page.goto(item.linkUrl, { 'timeout': 600000, });
-        //             await page.setViewport({ width: 1920, height: 1080 });
-        //             await page.locator(item.usernameTag).fill(item.username);
-        //             await page.locator(item.passwordTag).fill(item.password);
-        //             await page.locator(item.buttonTag).click();
-        //         })
-        //     }
-        //     catch (e) {
-        //         res.status(500).json(e)
-        //     }
-        //     res.status(200).json("ok")
-        // }
+        if (links.length > 0) {
+            const browser = await puppeteer.connect({ browserURL, headless: false });
+            try {
+                links?.map(async (item) => {
+                    const page = await browser.newPage();
+                    page.setDefaultNavigationTimeout(0);
+                    await page.goto(item.linkUrl, { 'timeout': 600000, });
+                    await page.setViewport({ width: 1920, height: 1080 });
+                    await page.locator(item.usernameTag).fill(item.username);
+                    await page.locator(item.passwordTag).fill(item.password);
+                    await page.locator(item.buttonTag).click();
+                })
+            }
+            catch (e) {
+                res.status(500).json(e)
+            }
+            res.status(200).json("ok")
+        }
     }
     catch (e) {
         res.status(500).json(e)
