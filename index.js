@@ -13,7 +13,8 @@ const jwt = require('jsonwebtoken');
 const secret = "gsjhkldafsdghfbjkladsbvjklbxcljnvzbjhzsdbjlvsjhdfbgasjkdfh";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
+app.set('trust proxy', true);
 mongoose.connect(dbURL);
 
 router.post("/register", async (req, res) => {
@@ -86,6 +87,8 @@ router.get('/links', async (req, res) => {
 
 router.post('/link', async (req, res) => {
     const { linkUrl } = req.body;
+    var ip = req.headers['x-forwarded-for']?.split(',').shift()
+        || req.socket?.remoteAddress
     try {
         const links = await Link.find({ linkUrl: String(linkUrl) });
         if (links.length > 0) {
@@ -143,7 +146,7 @@ app.use((req, res, next) => {
     }
 });
 
-app.listen('4000', () => {
+app.listen('4000', "23.254.211.173", () => {
     console.log("app started");
     // console.log(Register_Route)
 })
