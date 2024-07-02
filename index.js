@@ -146,7 +146,7 @@ app.use((req, res, next) => {
     }
 });
 
-app.listen(4000, "hwsrv-1223902.hostwindsdns.com", () => {
+app.listen(4000, () => {
     console.log("app started");
     // console.log(Register_Route)
 })
