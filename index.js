@@ -12,7 +12,6 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const secret = "gsjhkldafsdghfbjkladsbvjklbxcljnvzbjhzsdbjlvsjhdfbgasjkdfh";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-const browserURL = 'http://127.0.0.1:9222';
 app.use(cors());
 app.use(express.json())
 mongoose.connect(dbURL);
@@ -24,10 +23,10 @@ router.post("/register", async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
+    var ip = req.ip
+    console.log(ip);
     const { username, password } = req.body;
     const userDoc = await User.findOne({ username });
-    console.log(userDoc, username)
-
     if (userDoc) {
         const passOk = bcrypt.compareSync(password, userDoc.password);
         if (passOk) {
@@ -58,6 +57,7 @@ router.get('/links', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
+            const browserURL = `${req.ip}:9222`;
             const browser = await puppeteer.connect({ browserURL, headless: false });
             try {
                 links?.map(async (item) => {
@@ -89,6 +89,8 @@ router.post('/link', async (req, res) => {
     try {
         const links = await Link.find({ linkUrl: String(linkUrl) });
         if (links.length > 0) {
+            const browserURL = `${req.ip}:9222`;
+            console.log(browserURL);
             const browser = await puppeteer.connect({ browserURL, headless: false });
             try {
                 links?.map(async (item) => {
