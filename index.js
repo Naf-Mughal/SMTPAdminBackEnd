@@ -62,7 +62,7 @@ router.get('/links', async (req, res) => {
             // const browserURL = `${req.ip}:9222`;
             // const browser = await puppeteer.connect({ browserURL, headless: false });
             const browser = await puppeteer.launch({
-                headless: 'false',
+                headless: false,
                 product: 'firefox'
             })
             try {
@@ -101,7 +101,7 @@ router.post('/link', async (req, res) => {
             // const browserURL = `http://${req.ip}:9222`;
             // const browser = await puppeteer.connect({ browserURL, headless: false });
             const browser = await puppeteer.launch({
-                headless: 'false',
+                headless: false,
                 product: 'firefox'
             })
             try {
