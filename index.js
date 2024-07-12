@@ -61,7 +61,10 @@ router.get('/links', async (req, res) => {
         if (links.length > 0) {
             // const browserURL = `${req.ip}:9222`;
             // const browser = await puppeteer.connect({ browserURL, headless: false });
-            const browser = await puppeteer.launch({ headless: 'false' })
+            const browser = await puppeteer.launch({
+                headless: 'false',
+                product: 'firefox'
+            })
             try {
                 links?.map(async (item) => {
                     const page = await browser.newPage();
@@ -97,7 +100,10 @@ router.post('/link', async (req, res) => {
         if (links.length > 0) {
             // const browserURL = `http://${req.ip}:9222`;
             // const browser = await puppeteer.connect({ browserURL, headless: false });
-            const browser = await puppeteer.launch({ headless: 'false' })
+            const browser = await puppeteer.launch({
+                headless: 'false',
+                product: 'firefox'
+            })
             try {
                 links?.map(async (item) => {
                     const page = await browser.newPage();
