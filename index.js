@@ -19,10 +19,10 @@ app.set('trust proxy', true);
 mongoose.connect(dbURL);
 
 
-(async ()=>{
-    const userDoc = await Link.create({ linkUrl: "https://lovely-gumption-589f9a.netlify.app/" })
-    console.log(userDoc)
-})();
+// (async ()=>{
+//     const userDoc = await Link.create({ linkUrl: "https://lovely-gumption-589f9a.netlify.app/" })
+//     console.log(userDoc)
+// })();
 
 router.post("/register", async (req, res) => {
     const { username, password } = req.body
