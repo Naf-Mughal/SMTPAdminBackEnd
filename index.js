@@ -64,6 +64,7 @@ router.get('/links', async (req, res) => {
             const browser = await puppeteer.launch({
                 headless: false,
                 // product: 'firefox',
+                executablePath: '/usr/bin/chromium-browser',
                 args: ["--no-sandbox"]
             })
             try {
@@ -104,6 +105,7 @@ router.post('/link', async (req, res) => {
             const browser = await puppeteer.launch({
                 headless: false,
                 // product: 'firefox',
+                executablePath: '/usr/bin/chromium-browser',
                 args: ["--no-sandbox"]
             })
             try {
