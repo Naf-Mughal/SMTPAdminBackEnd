@@ -12,6 +12,7 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const secret = "gsjhkldafsdghfbjkladsbvjklbxcljnvzbjhzsdbjlvsjhdfbgasjkdfh";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 app.set('trust proxy', true);
@@ -58,8 +59,9 @@ router.get('/links', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
-            const browserURL = `${req.ip}:9222`;
-            const browser = await puppeteer.connect({ browserURL, headless: false });
+            // const browserURL = `${req.ip}:9222`;
+            // const browser = await puppeteer.connect({ browserURL, headless: false });
+            const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], })
             try {
                 links?.map(async (item) => {
                     const page = await browser.newPage();
@@ -87,14 +89,15 @@ router.get('/links', async (req, res) => {
 
 router.post('/link', async (req, res) => {
     const { linkUrl } = req.body;
-    var ip = req.headers['x-forwarded-for']?.split(',').shift()
-        || req.socket?.remoteAddress
+    // const data = (await fetch("http://localhost:9222/json/version"));
+    // const ipData = await data.json();
+    // console.log(data)
     try {
         const links = await Link.find({ linkUrl: String(linkUrl) });
         if (links.length > 0) {
-            const browserURL = `${req.ip}:9222`;
-            console.log(browserURL);
-            const browser = await puppeteer.connect({ browserURL, headless: false });
+            // const browserURL = `http://${req.ip}:9222`;
+            // const browser = await puppeteer.connect({ browserURL, headless: false });
+            const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], })
             try {
                 links?.map(async (item) => {
                     const page = await browser.newPage();
@@ -146,7 +149,7 @@ app.use((req, res, next) => {
     }
 });
 
-app.listen(4000, () => {
+app.listen(4000, "127.0.0.1", () => {
     console.log("app started");
     // console.log(Register_Route)
 })
