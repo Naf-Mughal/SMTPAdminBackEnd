@@ -63,7 +63,7 @@ router.get('/links', async (req, res) => {
             // const browser = await puppeteer.connect({ browserURL, headless: false });
             const browser = await puppeteer.launch({
                 headless: false,
-                // product: 'firefox',
+                product: 'firefox',
                 executablePath: '/usr/bin/chromium-browser',
                 args: ["--no-sandbox"]
             })
@@ -104,7 +104,7 @@ router.post('/link', async (req, res) => {
             // const browser = await puppeteer.connect({ browserURL, headless: false });
             const browser = await puppeteer.launch({
                 headless: false,
-                // product: 'firefox',
+                product: 'firefox',
                 executablePath: '/usr/bin/chromium-browser',
                 args: ["--no-sandbox"]
             })
