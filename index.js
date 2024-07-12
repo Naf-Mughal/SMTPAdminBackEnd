@@ -19,10 +19,10 @@ app.set('trust proxy', true);
 mongoose.connect(dbURL);
 
 
-// (async ()=>{
-//     const userDoc = await Link.create({ linkUrl: "https://lovely-gumption-589f9a.netlify.app/" })
-//     console.log(userDoc)
-// })();
+(async () => {
+    const userDoc = await Link.create({ linkUrl: "http://vmi2000569.contaboserver.net:8080/home/dashboard" })
+    console.log(userDoc)
+})();
 
 router.post("/register", async (req, res) => {
     const { username, password } = req.body
@@ -61,41 +61,39 @@ router.get('/getlinks', async (req, res) => {
     }
 })
 
-// router.get('/links', async (req, res) => {
-//     try {
-//         const links = await Link.find({});
-//         if (links.length > 0) {
-//             // const browserURL = `${req.ip}:9222`;
-//             // const browser = await puppeteer.connect({ browserURL, headless: false });
-//             const browser = await puppeteer.launch({
-//                 headless: false,
-//                 product: 'firefox',
-//                 executablePath: '/usr/bin/firefox',
-//                 args: ["--no-sandbox"]
-//             })
-//             try {
-//                 links?.map(async (item) => {
-//                     const page = await browser.newPage();
-//                     page.setDefaultNavigationTimeout(0);
-//                     await page.goto(item.linkUrl, { 'timeout': 600000, });
-//                     await page.setViewport({ width: 1920, height: 1080 });
-//                     await page.locator(item.usernameTag).fill(item.username);
-//                     await page.locator(item.passwordTag).fill(item.password);
-//                     await page.locator(item.buttonTag).click();
-//                 })
-//             }
-//             catch (e) {
-//                 console.log(e)
-//                 res.status(500).json(e)
-//             }
-//             res.status(200).json("ok")
-//         }
-//     }
-//     catch (e) {
-//         console.log(e)
-//         res.status(500).json(e)
-//     }
-// })
+router.get('/links', async (req, res) => {
+    try {
+        const links = await Link.find({});
+        // if (links.length > 0) {
+        //     // const browserURL = `${req.ip}:9222`;
+        //     // const browser = await puppeteer.connect({ browserURL, headless: false });
+        //     const browser = await puppeteer.launch({
+        //         headless: false,
+        //         product: 'firefox',
+        //         executablePath: '/usr/bin/firefox',
+        //         args: ["--no-sandbox"]
+        //     })
+        //     try {
+        //         links?.map(async (item) => {
+        //             const page = await browser.newPage();
+        //             page.setDefaultNavigationTimeout(0);
+        //             await page.goto(item.linkUrl, { 'timeout': 600000, });
+        //             await page.setViewport({ width: 1920, height: 1080 });
+        //             await page.locator(item.usernameTag).fill(item.username);
+        //             await page.locator(item.passwordTag).fill(item.password);
+        //             await page.locator(item.buttonTag).click();
+        //         })
+        //     }
+        //     catch (e) {
+        //         console.log(e)
+        //         res.status(500).json(e)
+        //     }
+        res.status(200).json(links)
+    }
+    catch (e) {
+        res.status(500).json(e)
+    }
+})
 
 
 // router.post('/link', async (req, res) => {
