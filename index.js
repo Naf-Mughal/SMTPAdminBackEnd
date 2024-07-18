@@ -19,10 +19,10 @@ app.set('trust proxy', true);
 mongoose.connect(dbURL);
 
 
-(async () => {
-    const userDoc = await Link.create({ linkUrl: "http://vmi2000569.contaboserver.net:8080/home/dashboard" })
-    console.log(userDoc)
-})();
+// (async () => {
+//     const userDoc = await Link.create({ linkUrl: "http://vmi2000569.contaboserver.net:8080/home/dashboard" })
+//     console.log(userDoc)
+// })();
 
 router.post("/register", async (req, res) => {
     const { username, password } = req.body
@@ -150,6 +150,9 @@ app.use(express.static(path.join(__dirname, 'react-app/build')));
 app.use(express.static(path.join(__dirname, '/public/images')));
 
 app.use((req, res, next) => {
+
+    console.log(req.cookies)
+
     if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
         next();
     } else {
