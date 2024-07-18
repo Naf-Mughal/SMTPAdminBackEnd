@@ -13,7 +13,9 @@ const jwt = require('jsonwebtoken');
 const secret = "gsjhkldafsdghfbjkladsbvjklbxcljnvzbjhzsdbjlvsjhdfbgasjkdfh";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const port = process.env.PORT || 4000;
-app.use(cors());
+app.use(cors({
+    credentials: "include"
+}));
 app.use(express.json());
 app.set('trust proxy', true);
 mongoose.connect(dbURL);
