@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.use((req, res, next) => {
-    const token = req?.headers?.cookie?.slice(6);
+    const token = req?.headers?.authorization?.slice(6);
     if (token !== "" && token !== undefined) {
         jwt.verify(token, secret, {}, (err, info) => {
             if (err) throw err;
