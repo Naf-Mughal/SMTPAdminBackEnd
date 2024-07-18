@@ -30,9 +30,11 @@ router.post("/register", async (req, res) => {
     res.json(userDoc)
 })
 
+router.post('/logout', (req, res) => {
+    res.cookie('token', '').json('ok');
+})
+
 router.post('/login', async (req, res) => {
-    var ip = req.ip
-    console.log(ip);
     const { username, password } = req.body;
     const userDoc = await User.findOne({ username });
     if (userDoc) {
@@ -49,13 +51,33 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.use((req, res, next) => {
+    const token = req?.headers?.cookie?.slice(6);
+    if (token !== "" && token !== undefined) {
+        jwt.verify(token, secret, {}, (err, info) => {
+            if (err) throw err;
+            if (info === "" || info === undefined) next(res.status(401).json("Unauthorized"));
+            else next();
+        })
+    }
+    else next(res.status(401).json("Unauthorized"));
+})
+
+router.get('/profile', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, (err, info) => {
+        if (err) throw err;
+        res.json(info);
+    })
+});
+
 router.get('/getlinks', async (req, res) => {
     try {
         const links = await Link.find({});
         if (links.length > 0) {
-            res.status(200).json(links)
+            res.status(200).json(links);
         }
-        else res.status(200).json("No Records Found")
+        else res.status(200).json("No Records Found");
     } catch (error) {
         res.status(500).json(error);
     }
@@ -136,23 +158,12 @@ router.get('/links', async (req, res) => {
 //     }
 // })
 
-router.get('/profile', (req, res) => {
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, (err, info) => {
-        if (err) throw err;
-        res.json(info);
-    })
-});
-
 app.use("/api", router)
 
 app.use(express.static(path.join(__dirname, 'react-app/build')));
 app.use(express.static(path.join(__dirname, '/public/images')));
 
 app.use((req, res, next) => {
-
-    console.log(req.cookies)
-
     if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
         next();
     } else {
@@ -161,6 +172,9 @@ app.use((req, res, next) => {
         res.header('Pragma', 'no-cache');
         res.sendFile(path.join(__dirname, 'react-app/build', 'index.html'));
     }
+
+    const data = res.json;
+
 });
 
 app.listen(4000, () => {
