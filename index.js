@@ -147,7 +147,7 @@ router.get('/profile', (req, res) => {
 app.use("/api", router)
 
 app.use(express.static(path.join(__dirname, 'react-app/build')));
-app.use(express.static(path.join(__dirname, '/logos')));
+app.use(express.static(path.join(__dirname, '/public/images')));
 
 app.use((req, res, next) => {
     if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
