@@ -10,9 +10,8 @@ const router = express.Router();
 const salt = 10;
 const app = express();
 const jwt = require('jsonwebtoken');
-const secret = "gsjhkldafsdghfbjkladsbvjklbxcljnvzbjhzsdbjlvsjhdfbgasjkdfh";
+var secret = "";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-const port = process.env.PORT || 4000;
 app.use(cors({
     credentials: true,
     origin: "http://localhost:3000"
@@ -40,14 +39,16 @@ router.post('/logout', (req, res) => {
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const userDoc = await User.findOne({ username });
+    const sec = Math.random().toString(18).slice(2);
     if (userDoc) {
         const passOk = bcrypt.compareSync(password, userDoc.password);
         if (passOk) {
-            jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
+            jwt.sign({ username, id: userDoc._id, userRole: userDoc.userRole }, sec, {}, (err, token) => {
                 if (err) throw err;
                 res.cookie('token', token).json({ id: userDoc._id, username, token: token });
             })
         }
+        secret = sec;
     }
     else {
         res.status(400).json('Wrong credentials')
@@ -58,7 +59,6 @@ router.use((req, res, next) => {
     const token = req?.headers?.authorization?.slice(6);
     if (token !== "" && token !== undefined) {
         jwt.verify(token, secret, {}, (err, info) => {
-            if (err) throw err;
             if (info === "" || info === undefined) next(res.status(401).json("Unauthorized"));
             else next();
         })
@@ -69,97 +69,53 @@ router.use((req, res, next) => {
 router.get('/profile', (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, (err, info) => {
-        if (err) throw err;
         res.json(info);
     })
 });
 
-router.get('/getlinks', async (req, res) => {
-    try {
-        const links = await Link.find({});
-        if (links.length > 0) {
-            res.status(200).json(links);
+router.get('/links',
+    async (req, res) => {
+        let user = {};
+        const token = req?.headers?.authorization?.slice(6);
+        jwt.verify(token, secret, {}, (err, info) => {
+            user = info;
+        })
+        try {
+            let links = [];
+            if (user?.userRole === 'admin') {
+                links = await Link.find({});
+            }
+            else {
+                links = await Link.find({ username: user?.username })
+            }
+            if (links.length > 0) {
+                res.status(200).json(links);
+            }
+            else res.status(200).json("No Records Found");
+        } catch (error) {
+            res.status(500).json(error);
         }
-        else res.status(200).json("No Records Found");
-    } catch (error) {
-        res.status(500).json(error);
-    }
-})
+    })
 
-router.get('/links', async (req, res) => {
+router.use((req, res, next) => {
+    const token = req?.headers?.authorization?.slice(6);
+    jwt.verify(token, secret, {}, (err, info) => {
+        if (info.userRole === "admin") next();
+        else next(res.status(403).json("You don't have permissions"));
+    })
+})
+router.get("/users", async (req, res) => {
     try {
-        const links = await Link.find({});
-        // if (links.length > 0) {
-        //     // const browserURL = `${req.ip}:9222`;
-        //     // const browser = await puppeteer.connect({ browserURL, headless: false });
-        //     const browser = await puppeteer.launch({
-        //         headless: false,
-        //         product: 'firefox',
-        //         executablePath: '/usr/bin/firefox',
-        //         args: ["--no-sandbox"]
-        //     })
-        //     try {
-        //         links?.map(async (item) => {
-        //             const page = await browser.newPage();
-        //             page.setDefaultNavigationTimeout(0);
-        //             await page.goto(item.linkUrl, { 'timeout': 600000, });
-        //             await page.setViewport({ width: 1920, height: 1080 });
-        //             await page.locator(item.usernameTag).fill(item.username);
-        //             await page.locator(item.passwordTag).fill(item.password);
-        //             await page.locator(item.buttonTag).click();
-        //         })
-        //     }
-        //     catch (e) {
-        //         console.log(e)
-        //         res.status(500).json(e)
-        //     }
-        res.status(200).json(links)
+        const users = await User.find({});
+        const resDoc = users.filter(item => {
+            if (item.userRole !== "admin") { return item }
+        })
+        res.status(200).json(resDoc)
     }
     catch (e) {
         res.status(500).json(e)
     }
 })
-
-
-// router.post('/link', async (req, res) => {
-//     const { linkUrl } = req.body;
-//     // const data = (await fetch("http://localhost:9222/json/version"));
-//     // const ipData = await data.json();
-//     // console.log(data)
-//     try {
-//         const links = await Link.find({ linkUrl: String(linkUrl) });
-//         if (links.length > 0) {
-//             // const browserURL = `http://${req.ip}:9222`;
-//             // const browser = await puppeteer.connect({ browserURL, headless: false });
-//             const browser = await puppeteer.launch({
-//                 headless: false,
-//                 product: 'firefox',
-//                 executablePath: '/usr/bin/firefox',
-//                 args: ["--no-sandbox"]
-//             })
-//             try {
-//                 links?.map(async (item) => {
-//                     const page = await browser.newPage();
-//                     page.setDefaultNavigationTimeout(0);
-//                     await page.goto(item.linkUrl, { 'timeout': 600000, });
-//                     await page.setViewport({ width: 1920, height: 1080 });
-//                     await page.locator(item.usernameTag).fill(item.username);
-//                     await page.locator(item.passwordTag).fill(item.password);
-//                     await page.locator(item.buttonTag).click();
-//                 })
-//             }
-//             catch (e) {
-//                 console.log(e)
-//                 res.status(500).json(e)
-//             }
-//             res.status(200).json("ok")
-//         }
-//     }
-//     catch (e) {
-//         console.log(e)
-//         res.status(500).json(e)
-//     }
-// })
 
 app.use("/api", router)
 
