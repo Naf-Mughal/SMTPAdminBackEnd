@@ -4,7 +4,7 @@ const cors = require('cors');
 const User = require("./modals/User")
 const Link = require("./modals/Link")
 const bcrypt = require('bcrypt');
-const puppeteer = require('puppeteer');
+var ObjectId = require('mongoose').Types.ObjectId;
 const path = require('path');
 const router = express.Router();
 const salt = 10;
@@ -116,6 +116,54 @@ router.get("/users", async (req, res) => {
         res.status(500).json(e)
     }
 })
+
+router.post("/addUser", async (req, res) => {
+    const { username, password, links } = req.body
+    let userDoc = {};
+    try {
+        const user = await User.find({ username: username })
+        if (user[0]?.username === username) {
+            userDoc = [{ username: "" }]
+            res.status(400).json("record exists");
+        }
+        else {
+            userDoc = await User.create({ username: username, password: bcrypt.hashSync(password, salt) })
+        }
+    }
+    catch (e) { res.status(500).json(e) }
+    if (userDoc?.username === username) {
+        try {
+            const linksDoc = links?.map(async item => {
+                await Link.findOneAndUpdate({ _id: new ObjectId(item) }, { $addToSet: { username: username } }, { new: true })
+            })
+            res.json("User Created")
+        }
+        catch (e) { res.status(400).json(e) }
+    }
+})
+
+router.post("/delUser", async (req, res) => {
+    const { username, links } = req.body
+    let userDoc = {};
+    try {
+        const user = await User.findOneAndDelete({ username: username })
+        if (user.username === username) {
+            try {
+                const linksDoc = links?.map(async item => {
+                    await Link.findOneAndUpdate({ _id: new ObjectId(item) }, { $pull: { username: username } }, { new: true })
+                })
+                res.json("User Deleted")
+            }
+            catch (e) { res.status(400).json(e) }
+        }
+        else {
+            res.status(400).json("record does not exists");
+        }
+    }
+    catch (e) { res.status(400).json("record does not exist") }
+})
+
+
 
 app.use("/api", router)
 
