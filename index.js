@@ -67,7 +67,7 @@ router.use((req, res, next) => {
 })
 
 router.get('/profile', (req, res) => {
-    const { token } = req.cookies;
+    const token = req?.headers?.authorization?.slice(6);
     jwt.verify(token, secret, {}, (err, info) => {
         res.json(info);
     })
