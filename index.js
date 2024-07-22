@@ -134,7 +134,7 @@ router.post("/addUser", async (req, res) => {
     if (userDoc?.username === username) {
         try {
             const linksDoc = links?.map(async item => {
-                await Link.findOneAndUpdate({ _id: new ObjectId(item) }, { $addToSet: { username: username } }, { new: true })
+                await Link.findOneAndUpdate({ name: item }, { $addToSet: { username: username } }, { new: true })
             })
             res.json("User Created")
         }
@@ -150,7 +150,7 @@ router.post("/delUser", async (req, res) => {
         if (user.username === username) {
             try {
                 const linksDoc = links?.map(async item => {
-                    await Link.findOneAndUpdate({ _id: new ObjectId(item) }, { $pull: { username: username } }, { new: true })
+                    await Link.findOneAndUpdate({ name: item }, { $pull: { username: username } }, { new: true })
                 })
                 res.json("User Deleted")
             }
@@ -167,22 +167,22 @@ router.post("/delUser", async (req, res) => {
 
 app.use("/api", router)
 
-app.use(express.static(path.join(__dirname, 'react-app/build')));
-app.use(express.static(path.join(__dirname, '/public/images')));
+// app.use(express.static(path.join(__dirname, 'react-app/build')));
+// app.use(express.static(path.join(__dirname, '/public/images')));
 
-app.use((req, res, next) => {
-    if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
-        next();
-    } else {
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        res.sendFile(path.join(__dirname, 'react-app/build', 'index.html'));
-    }
+// app.use((req, res, next) => {
+//     if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
+//         next();
+//     } else {
+//         res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+//         res.header('Expires', '-1');
+//         res.header('Pragma', 'no-cache');
+//         res.sendFile(path.join(__dirname, 'react-app/build', 'index.html'));
+//     }
 
-    const data = res.json;
+//     const data = res.json;
 
-});
+// });
 
 app.listen(4000, () => {
     console.log("app started");
