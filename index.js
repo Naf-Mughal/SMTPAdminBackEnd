@@ -6,6 +6,7 @@ const Link = require("./modals/Link")
 const bcrypt = require('bcrypt');
 var ObjectId = require('mongoose').Types.ObjectId;
 const path = require('path');
+const axios = require("axios")
 const router = express.Router();
 const salt = 10;
 const app = express();
@@ -21,10 +22,10 @@ app.set('trust proxy', true);
 mongoose.connect(dbURL);
 
 
-// (async () => {
-//     const userDoc = await Link.create({ linkUrl: "http://vmi2000569.contaboserver.net:8080/home/dashboard" })
-//     console.log(userDoc)
-// })();
+const cpanelUrl = 'https://hwsrv-1223902.hostwindsdns.com:2083';
+const cpanelUser = 'salesdriver';
+const cpanelToken = 'QT1SZCDCBDI4NCRXJXICB6BWYWH2YAX1';
+
 
 router.post("/register", async (req, res) => {
     const { username, password } = req.body
@@ -54,6 +55,67 @@ router.post('/login', async (req, res) => {
         res.status(400).json('Wrong credentials')
     }
 });
+
+router.get('/smtpBuilderLogs', async (req, res) => {
+    try {
+        let emailCount = 0;
+        let domainCount = 0;
+        let sslPort = 0;
+
+        await axios({
+            method: 'GET',
+            url: `${cpanelUrl}/execute/DomainInfo/list_domains`,
+            headers: {
+                'Authorization': `cpanel ${cpanelUser}:${cpanelToken}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            const mainD = response?.data?.data.main_domain;
+            const subD = response?.data?.data.sub_domains;
+            const parkedD = response?.data?.data.parked_domains;
+            const addonD = response?.data?.data.addon_domains;
+            const domains = mainD.concat(subD, parkedD, addonD);
+            domainCount = domains.split(",").length;
+        })
+
+        await axios({
+            method: 'GET',
+            url: `${cpanelUrl}/execute/Chkservd/get_exim_ports_ssl`,
+            headers: {
+                'Authorization': `cpanel ${cpanelUser}:${cpanelToken}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            sslPort = response?.data?.data?.ports[0];
+        })
+
+        await axios({
+            method: 'GET',
+            url: `${cpanelUrl}/execute/Email/count_pops`,
+            headers: {
+                'Authorization': `cpanel ${cpanelUser}:${cpanelToken}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            emailCount = Number(response?.data?.data)
+        })
+
+        console.log("ok", emailCount)
+
+
+        console.log(emailCount, domainCount, sslPort)
+
+
+        if (emailCount !== 0 && domainCount !== 0 && sslPort !== 0) {
+            res.status(200).json({ mailingAcc: emailCount, domains: domainCount, sslPort });
+        } else {
+            res.status(400).json(response.data);
+        }
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
+
 
 router.use((req, res, next) => {
     const token = req?.headers?.authorization?.slice(6);
