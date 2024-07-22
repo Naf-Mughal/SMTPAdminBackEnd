@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
         if (passOk) {
             jwt.sign({ username, id: userDoc._id, userRole: userDoc.userRole }, sec, {}, (err, token) => {
                 if (err) throw err;
-                res.cookie('token', token).json({ id: userDoc._id, username, token: token });
+                res.cookie('token', token).json({ id: userDoc._id, username, token: token, userRole: userDoc.userRole });
             })
         }
         secret = sec;
