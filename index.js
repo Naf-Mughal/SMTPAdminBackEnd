@@ -56,6 +56,49 @@ router.post('/login', async (req, res) => {
     }
 });
 
+
+router.use((req, res, next) => {
+    const token = req?.headers?.authorization?.slice(6);
+    if (token !== "" && token !== undefined) {
+        jwt.verify(token, secret, {}, (err, info) => {
+            if (info === "" || info === undefined) next(res.status(401).json("Unauthorized"));
+            else next();
+        })
+    }
+    else next(res.status(401).json("Unauthorized"));
+})
+
+router.get('/profile', (req, res) => {
+    const token = req?.headers?.authorization?.slice(6);
+    jwt.verify(token, secret, {}, (err, info) => {
+        res.json(info);
+    })
+});
+
+router.get('/links',
+    async (req, res) => {
+        let user = {};
+        const token = req?.headers?.authorization?.slice(6);
+        jwt.verify(token, secret, {}, (err, info) => {
+            user = info;
+        })
+        try {
+            let links = [];
+            if (user?.userRole === 'admin') {
+                links = await Link.find({});
+            }
+            else {
+                links = await Link.find({ username: user?.username })
+            }
+            if (links.length > 0) {
+                res.status(200).json(links);
+            }
+            else res.status(200).json("No Records Found");
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    })
+
 router.get('/smtpBuilderLogs', async (req, res) => {
     try {
         let emailCount = 0;
@@ -115,49 +158,6 @@ router.get('/smtpBuilderLogs', async (req, res) => {
         res.status(500).json(error);
     }
 });
-
-
-router.use((req, res, next) => {
-    const token = req?.headers?.authorization?.slice(6);
-    if (token !== "" && token !== undefined) {
-        jwt.verify(token, secret, {}, (err, info) => {
-            if (info === "" || info === undefined) next(res.status(401).json("Unauthorized"));
-            else next();
-        })
-    }
-    else next(res.status(401).json("Unauthorized"));
-})
-
-router.get('/profile', (req, res) => {
-    const token = req?.headers?.authorization?.slice(6);
-    jwt.verify(token, secret, {}, (err, info) => {
-        res.json(info);
-    })
-});
-
-router.get('/links',
-    async (req, res) => {
-        let user = {};
-        const token = req?.headers?.authorization?.slice(6);
-        jwt.verify(token, secret, {}, (err, info) => {
-            user = info;
-        })
-        try {
-            let links = [];
-            if (user?.userRole === 'admin') {
-                links = await Link.find({});
-            }
-            else {
-                links = await Link.find({ username: user?.username })
-            }
-            if (links.length > 0) {
-                res.status(200).json(links);
-            }
-            else res.status(200).json("No Records Found");
-        } catch (error) {
-            res.status(500).json(error);
-        }
-    })
 
 router.use((req, res, next) => {
     const token = req?.headers?.authorization?.slice(6);
@@ -229,22 +229,22 @@ router.post("/delUser", async (req, res) => {
 
 app.use("/api", router)
 
-// app.use(express.static(path.join(__dirname, 'react-app/build')));
-// app.use(express.static(path.join(__dirname, '/public/images')));
+app.use(express.static(path.join(__dirname, 'react-app/build')));
+app.use(express.static(path.join(__dirname, '/public/images')));
 
-// app.use((req, res, next) => {
-//     if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
-//         next();
-//     } else {
-//         res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-//         res.header('Expires', '-1');
-//         res.header('Pragma', 'no-cache');
-//         res.sendFile(path.join(__dirname, 'react-app/build', 'index.html'));
-//     }
+app.use((req, res, next) => {
+    if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
+        next();
+    } else {
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+        res.sendFile(path.join(__dirname, 'react-app/build', 'index.html'));
+    }
 
-//     const data = res.json;
+    const data = res.json;
 
-// });
+});
 
 app.listen(4000, () => {
     console.log("app started");
