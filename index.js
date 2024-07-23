@@ -15,7 +15,8 @@ var secret = "";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 app.use(cors({
     credentials: true,
-    origin: "http://localhost:3000"
+    origin: ["http://localhost:3000", "http://sdmailbox.net:4000", "http://vmi2000569.contaboserver.net:4000"]
+
 }));
 app.use(express.json());
 app.set('trust proxy', true);
