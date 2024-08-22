@@ -11,7 +11,7 @@ const router = express.Router();
 const salt = 10;
 const app = express();
 const jwt = require('jsonwebtoken');
-var secret = "";
+const secret = "lksdjflkasdfsio";
 const dbURL = "mongodb+srv://nafeelaaqib:xDuLAtC8qf3Rwdeg@cluster0.dmdwok4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 app.use(cors({
     credentials: true,
@@ -41,7 +41,6 @@ router.post('/logout', (req, res) => {
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const userDoc = await User.findOne({ username });
-    const sec = Math.random().toString(18).slice(2);
     if (userDoc) {
         const passOk = bcrypt.compareSync(password, userDoc.password);
         if (passOk) {
@@ -50,7 +49,6 @@ router.post('/login', async (req, res) => {
                 res.cookie('token', token).json({ id: userDoc._id, username, token: token, userRole: userDoc.userRole });
             })
         }
-        secret = sec;
     }
     else {
         res.status(400).json('Wrong credentials')
