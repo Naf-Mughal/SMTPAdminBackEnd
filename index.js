@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
     if (userDoc) {
         const passOk = bcrypt.compareSync(password, userDoc.password);
         if (passOk) {
-            jwt.sign({ username, id: userDoc._id, userRole: userDoc.userRole }, sec, {}, (err, token) => {
+            jwt.sign({ username, id: userDoc._id, userRole: userDoc.userRole }, secret, {}, (err, token) => {
                 if (err) throw err;
                 res.cookie('token', token).json({ id: userDoc._id, username, token: token, userRole: userDoc.userRole });
             })
